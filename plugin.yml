@@ -1,0 +1,3 @@
+name: Trade Mania
+main: io.github.Andrew_College.TradeMania.TradeMania
+version: ${version}
