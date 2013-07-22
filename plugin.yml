@@ -5,6 +5,6 @@ version: ${version}
 commands:
   mkTrade:
     description: Creates a trade post with (a) specific player(s) (if specified)
-    usage:/mkTrade [player] [player] etc.
-    permission: Trademania.mkTrade
-    permission-message = You can't do that chief! Ask an admin or make a private trade. 
+    usage:  /<command> [player] [player] etc.
+    permission: <plugin name>.basic
+    permission-message:  You can't do that chief! Ask an admin or make a private trade. 
