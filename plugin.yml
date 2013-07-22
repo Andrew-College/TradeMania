@@ -1,3 +1,10 @@
-name: Trade Mania
+name: Trade_Mania
 main: io.github.Andrew_College.TradeMania.TradeMania
 version: ${version}
+
+commands:
+  mkTrade:
+    description: Creates a trade post with (a) specific player(s) (if specified)
+    usage:/mkTrade [player] [player] etc.
+    permission: Trademania.mkTrade
+    permission-message = You can't do that chief! Ask an admin or make a private trade. 
