@@ -1,26 +1,74 @@
 package io.github.Andrew_College.TradeMania;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class TradeMania extends JavaPlugin implements CommandExecutor{
-
+public final class TradeMania extends JavaPlugin implements CommandExecutor {
+	private ArrayList<PlayerStuff> playerLog;
 	public void onEnable() {
-		getLogger().info("onEnable has been invoked!");
+		BufferedReader br = null;
+		try {
+			getLogger().info(
+					"Reading Player backLog from file \"playerNews.log\"");
+			br = new BufferedReader(new FileReader("playerNews.log"));
+			StringBuilder sb = new StringBuilder();
+			String line = br.readLine();
+
+			while (line != null) {
+				sb.append(line);
+				sb.append("\n");
+				line = br.readLine();
+			}
+			br.close();
+			
+		} catch (IOException e) {
+			try {
+				if ((new File("playerNews.log")).createNewFile()) {
+					getLogger().info("File didn't exist, now it does :D");
+				} else {
+					getLogger()
+							.info("Problem reading from file \"playerNews.log\", corruption may have occured");
+					getLogger().info("\"playerNews.log\" will be rewritten");
+					File file = new File("playerNews.log");
+					file.setWritable(true);
+					BufferedWriter output = new BufferedWriter(new FileWriter(
+							file));
+					output.write("");
+					output.close();
+				}
+
+			} catch (IOException e1) {
+				getLogger().info(
+						"End of world, the TradeMania corp. is responsible");
+			}
+		}
 	}
 
 	public void onDisable() {
-		getLogger().info("onDisable has been invoked!");
+		getLogger().info("Saving Player backLog to file \"playerNews.log\"");
+		try {
+			File file = new File("playerNews.log");
+			file.setWritable(true);
+			BufferedWriter output = new BufferedWriter(new FileWriter(file));
+			output.write("");
+			output.close();
+		} catch (IOException e) {
+
+		}
+		getLogger().info("Saved Player backLog to file \"playerNews.log\"");
 	}
 
 	@Override
@@ -58,4 +106,12 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor{
 		}
 	}
 
+	private class PlayerStuff{
+		String Name = "";
+		ArrayList<String> logs = null;
+		PlayerStuff(String name){
+			this.Name = name;
+			this.logs = new ArrayList<String>(0);
+		}
+	}
 }
