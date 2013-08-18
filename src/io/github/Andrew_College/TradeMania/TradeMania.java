@@ -118,39 +118,61 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label,
 			String[] args) {
-
+		
 		if (cmd.getName().equalsIgnoreCase("mkTrade")) {
-			if(args.length == 0 || ((sender.isOp()||!(sender instanceof Player)) && args.length < 2)){
-				sender.sendMessage("To send your stuff to anyone, use \"/market" + 
-				((sender.isOp()||!(sender instanceof Player))?" [player]\" ":"\" ") + "instead");
+			String numPlayers =(sender instanceof Player)?"2 people":"1 person";
+			if(args.length<1){
+				//Silly goat didnt add any players
+				sender.sendMessage("No players supplied, I need at least "+numPlayers+" man!");
+				return false;
+			}
+			
+			if((sender.isOp()||!(sender instanceof Player))){
+				//Admin or Console cases
+				if(args[0].equalsIgnoreCase("Intervention")){
+					//modifying intervention
+					if(args.length<2 || args.length>2){
+						String onOff = Intervention?"on":"off";
+						sender.sendMessage("Intervention;"+onOff);
+						return true;
+					}
+					else if((args[1].equals("0") || args[1].equals("1"))){
+						Intervention = args[1].equals("1")?true:false;
+						return true;
+					}
+					else{
+						sender.sendMessage("Improper use of intervention");
+						sender.sendMessage("Use 1 for true(admin needed)");
+						sender.sendMessage("or 0 for false(admin not needed)");
+						return false;
+					}
+				}
 				
-				sender.sendMessage("Otherwise, use;");
+			}
+			if(!(sender instanceof Player)){
+				//Console specific cases
+				if(args.length<2){
+					sender.sendMessage("Number of specified players is too low");
+					sender.sendMessage("You need to specify a trade post placer player");
+					sender.sendMessage("and who the trades are for.");
+					sender.sendMessage("e.g. mktrade ben(post placer) sarah(trade recipient) ...");
+					return false;
+				}
+			}
+			if(args.length<1){
+				sender.sendMessage("Number of specified players is too low");
+				sender.sendMessage("You need to specify who the trades are for.");
+				sender.sendMessage("e.g. /mktrade ben sarah thomas ... Notch  HeroBrine");
 				return false;
 			}
-			if((sender.isOp()||!(sender instanceof Player)) 
-				&&	args[0].equalsIgnoreCase("Intervention") 
-				&& (args[1] == "0" || args[1] == "1")){
-				Intervention = (args[1] == "1")?true:false;
-			}
-			if ((sender.isOp()||!(sender instanceof Player))//not a player
-				&& args[0].equalsIgnoreCase("Intervention")  
-				&& !(args[1] == "0" || args[1] == "1")) {
-				//Intervention used in an illegal manner (number other than 0/1 used)
-				sender.sendMessage("If you wanted to disable the anti-spam admin requirement");
-				sender.sendMessage("use \"/mkTrade Intervention 1(enable<Admin needed>)/0(disable<Admin not needed>)\"");
-				return false;
-			}
-			if(Bukkit.getPlayer(args[0]) == null || !Bukkit.getPlayer(args[0]).isOnline()){
-				sender.sendMessage(args[0] + " doesn't exist or is offline");
-				return false;
-			}
-			if (!mkTrade(sender, args)) {
+			if (!mkTrade(sender, args)) {// run mktrade method, if all goes well, hurray, otherwise...
 				//Insanity...
 				//this..is...UNNACCEPTABLE!!!!
 				sender.sendMessage("Sorry, something went wrong in mkTrade");
 				return false;
 			}
-			if(!Intervention || sender.isOp() || security())return true;
+			return true;
+			
 			
 		}
 
