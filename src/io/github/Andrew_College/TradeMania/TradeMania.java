@@ -120,10 +120,13 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 			String[] args) {
 		
 		if (cmd.getName().equalsIgnoreCase("mkTrade")) {
-			String numPlayers =(sender instanceof Player)?"2 people":"1 person";
+			
 			if(args.length<1){
 				//Silly goat didnt add any players
+				String numPlayers =(sender instanceof Player)?"2 people":"1 person";
 				sender.sendMessage("No players supplied, I need at least "+numPlayers+" man!");
+				sender.sendMessage("You need to specify who the trades are for.");
+				sender.sendMessage("e.g. /mktrade ben sarah thomas ... Notch  HeroBrine");
 				return false;
 			}
 			
@@ -158,12 +161,6 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 					sender.sendMessage("e.g. mktrade ben(post placer) sarah(trade recipient) ...");
 					return false;
 				}
-			}
-			if(args.length<1){
-				sender.sendMessage("Number of specified players is too low");
-				sender.sendMessage("You need to specify who the trades are for.");
-				sender.sendMessage("e.g. /mktrade ben sarah thomas ... Notch  HeroBrine");
-				return false;
 			}
 			if (!mkTrade(sender, args)) {// run mktrade method, if all goes well, hurray, otherwise...
 				//Insanity...
@@ -226,7 +223,12 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 		try {
 			ItemStack tradePost = new ItemStack(Material.SIGN_POST, 1);
 			ItemMeta data = tradePost.getItemMeta();
-			String signName = "TradePost";
+			String temp = "";
+			
+			for(int i = 0; i < args.length; i++)
+				temp += args[i] + ", ";
+			
+			String signName = "TradePost " + ((args.length>2)?"multiple recipients": temp.substring(0, temp.length()-2));
 			
 			data.setDisplayName(signName);
 			tradePost.setItemMeta(data);
@@ -235,6 +237,7 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 			return true;
 		} catch (Exception e) {
 			//Something nope'd
+			sender.sendMessage("Sorry, I had a problem in \"mkTrade method\"."); 
 			return false;
 		}
 	}
