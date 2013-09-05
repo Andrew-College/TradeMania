@@ -7,10 +7,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -166,6 +168,7 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 				}
 
 			}
+			String[] argsa = null;
 			if (!(sender instanceof Player)) {
 				// Console specific cases
 				if (args.length < 2) {
@@ -175,9 +178,17 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 					sender.sendMessage("e.g. mktrade ben(post placer) sarah(trade recipient) ...");
 					return false;
 				}
+
+				sender = getServer().getPlayer(args[0]);
+				args = (String[]) ArrayUtils.removeElement(args, args[0]);
+				argsa = Arrays.copyOf(args, args.length-1);
 			}
-			if (!mkTrade(sender, args)) {// run mktrade method, if all goes
-											// well, hurray, otherwise...
+			
+			if(argsa == null) argsa = args; 
+				
+				
+			if (!mkTrade(sender, argsa)) {// run mktrade method, if all goes
+										// well, hurray, otherwise...
 				// Insanity...
 				// this..is...UNNACCEPTABLE!!!!
 				sender.sendMessage("Sorry, something went wrong in mkTrade");
@@ -234,9 +245,10 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 
 	private boolean mkTrade(CommandSender sender, String[] args) {
 		try {
-			if(tradingSigns == null){
+			if (tradingSigns == null) {
 				tradingSigns = new HashMap<String, ArrayList<SignData>>();
 			}
+
 			ItemStack tradePost = new ItemStack(Material.SIGN_POST, 1);
 			ItemMeta data = tradePost.getItemMeta();
 			String temp = "";
@@ -250,20 +262,21 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 
 			data.setDisplayName(signName);
 			tradePost.setItemMeta(data);
-			
+
 			Player player = Bukkit.getPlayer(sender.getName());
 			player.getInventory().addItem(tradePost);
-			
-			SignData sData = new SignData(data.getDisplayName(), sender.getName(),0,0,0,false);
-			
-			if(!tradingSigns.containsKey(sender.getName())){
-				ArrayList <SignData>signs = new ArrayList<SignData>();
+
+			SignData sData = new SignData(data.getDisplayName(),
+					sender.getName(), 0, 0, 0, false);
+
+			if (!tradingSigns.containsKey(sender.getName())) {
+				ArrayList<SignData> signs = new ArrayList<SignData>();
 				signs.add(sData);
 				tradingSigns.put(sender.getName(), signs);
-			}else{
+			} else {
 				tradingSigns.get(sender.getName()).add(sData);
 			}
-			
+
 			return true;
 		} catch (Exception e) {
 			// Something nope'd
@@ -272,17 +285,17 @@ public final class TradeMania extends JavaPlugin implements CommandExecutor {
 		}
 	}
 }
+
 class SignData {
-    private String m_signName;
-    private String m_signOwner;
-    private int m_x;
-    private int m_y;
-    private int m_z;
-    private boolean placed;
-    
-    
-    
-    protected SignData(String m_signName, String m_signOwner, int m_x, int m_y, int m_z, boolean placed) {
+	private String m_signName;
+	private String m_signOwner;
+	private int m_x;
+	private int m_y;
+	private int m_z;
+	private boolean placed;
+
+	protected SignData(String m_signName, String m_signOwner, int m_x, int m_y,
+			int m_z, boolean placed) {
 		this.m_signName = m_signName;
 		this.m_signOwner = m_signOwner;
 		this.m_x = m_x;
@@ -290,41 +303,53 @@ class SignData {
 		this.m_z = m_z;
 		this.placed = placed;
 	}
+
 	public String getSignName() {
 		return m_signName;
 	}
+
 	public void setSignName(String m_signName) {
 		this.m_signName = m_signName;
 	}
+
 	public String getSignOwner() {
 		return m_signOwner;
 	}
+
 	public void setSignOwner(String m_signOwner) {
 		this.m_signOwner = m_signOwner;
 	}
+
 	public int getX() {
 		return m_x;
 	}
+
 	public void setX(int m_x) {
 		this.m_x = m_x;
 	}
+
 	public int getY() {
 		return m_y;
 	}
+
 	public void setY(int m_y) {
 		this.m_y = m_y;
 	}
+
 	public int getZ() {
 		return m_z;
 	}
+
 	public void setZ(int m_z) {
 		this.m_z = m_z;
 	}
+
 	public boolean isPlaced() {
 		return placed;
 	}
+
 	public void setPlaced(boolean placed) {
 		this.placed = placed;
 	}
-	
+
 }
